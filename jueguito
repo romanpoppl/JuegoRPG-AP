@@ -1,0 +1,74 @@
+import pygame
+import sys
+import random
+
+def main():
+    pygame.init() #inicia los modulos de pygame.
+    ANCHO, ALTO = 800, 800  #ancho y alto de la ventana
+    pantalla= pygame.display.set_mode((ANCHO, ALTO)) #crea la ventana con el ancho y alto asigando
+    pygame.display.set_caption("RPG POR TURNOSS") #le da un titulo a la ventana
+    reloj = pygame.time.Clock() #crea un reloj q controla los fps
+
+    imagen_rey = pygame.image.load("assets.py/rey.png").convert_alpha()
+    imagen_paladin = pygame.image.load("assets.py/paladin.png").convert_alpha()
+    imagen_fondo = pygame.image.load("assets.py/fondo.jpg")
+
+
+    imagen_rey = pygame.transform.scale(imagen_rey, (200, 200))
+    imagen_paladin = pygame.transform.scale(imagen_paladin, (200, 200))
+    imagen_fondo = pygame.transform.scale(imagen_fondo,(800,800))
+
+    class Personaje:
+        def __init__(self,nombre,imagen,posicion, vida_max):
+            self.nombre = nombre
+            self.imagen = imagen
+            self.x, self.y = posicion
+            self.vida_max = vida_max
+            self.vida = vida_max 
+            #self.poder_normal = poder_normal 
+            #self.poder_especial = poder_especial
+
+            
+        def dibujar(self):
+            ancho = self.imagen.get_width()
+            alto = self.imagen.get_height()
+            pantalla.blit(self.imagen, (self.x - ancho // 2, self.y - alto // 2))
+            alto_barra = 10
+            ancho_barra = self.imagen.get_width()
+            proporción = self.vida / self.vida_max
+            pygame.draw.rect(pantalla, (255, 0, 0), (self.x -100, self.y - 115, ancho_barra, alto_barra))
+            pygame.draw.rect(pantalla, (0, 255, 0), (self.x -100 , self.y - 115, int(ancho_barra * proporción), alto_barra))
+            
+        def dibujarfondo(self):
+            pantalla.blit(self.imagen, (self.x, self.y))
+            
+
+        def recibir_daño(self, daño):
+            if random.random() < 0.2: #probabilidad
+                return False #esquiva
+            self.vida = max (0, self.vida - daño)
+            return True
+           
+    rey = Personaje("rey", imagen_rey,(560, 400), 1000)
+    paladin = Personaje("Paladin", imagen_paladin, (240, 400), 1000)
+    fondo = Personaje("romanpop", imagen_fondo, (0,0), 1 )
+
+    while True: 
+        for evento in pygame.event.get(): #recorre todos los eventos
+            if evento.type == pygame.QUIT: #Si el evento es "cerrar ventana (tocar la cruz arriba)"
+                pygame.quit() #cierra pygame
+                sys.exit() #sale del programa
+
+
+        pantalla.fill((0,0,0)) #fondo negro
+
+        fondo.dibujarfondo()
+        rey.dibujar()
+        paladin.dibujar()
+        
+        pygame.display.flip() #actualiza la pantalla cuando hay cambios
+        reloj.tick(60) #limita los fps a 60
+
+if __name__ == "__main__":
+    main() #llama a la funcion para correr el juego 
+    exit()
